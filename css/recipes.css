@@ -1,0 +1,48 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background-color: #fafafa;
+}
+
+/* Navbar styling */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #505050;
+  color: white;
+  padding: 12px 20px;
+}
+
+.nav-logo {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.nav-user span {
+  font-size: 1rem;
+}
+
+.nav-user button {
+  background-color: #000000;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nav-user button:hover {
+  background-color: #333333;
+}
+
+.content {
+  padding: 40px;
+}
