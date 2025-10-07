@@ -72,7 +72,6 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 let allRecipes = [];
 let filteredRecipes = [];
 let displayedCount = 15; // Show 15 recipes initially
-let currentPage = 1;
 
 // Fetch recipes dari API
 async function fetchRecipes() {
@@ -120,15 +119,21 @@ function populateCuisineDropdown() {
 
 // Generate stars untuk rating
 function generateStars(rating) {
+  const totalStars = 5;
   const fullStars = Math.floor(rating);
   const halfStar = rating % 1 >= 0.5;
   let stars = '';
 
   for (let i = 0; i < fullStars; i++) {
-    stars += '⭐';
+    stars += '★';
   }
   if (halfStar) {
-    stars += '⭐';
+    stars += '⯪';
+  }
+
+  const emptyStars = totalStars - fullStars - (halfStar ? 1 : 0);
+  for(let i = 0; i < emptyStars; i++) {
+    stars += '☆';
   }
 
   return stars;
@@ -168,9 +173,9 @@ function displayRecipes(recipes) {
       <div class="recipe-info">
         <h3 class="recipe-title">${recipe.name}</h3>
         <div class="recipe-meta">
-          <span class="meta-item">⏱️ ${recipe.prepTimeMinutes + recipe.cookTimeMinutes} mins</span>
+          <span class="meta-item">⏰ ${recipe.prepTimeMinutes + recipe.cookTimeMinutes} mins</span>
           <span class="meta-item ${getDifficultyClass(recipe.difficulty)}">📊 ${recipe.difficulty}</span>
-          <span class="meta-item">🍽️ ${recipe.cuisine}</span>
+          <span class="meta-item">🍳 ${recipe.cuisine}</span>
         </div>
         <p class="recipe-ingredients"><strong>Ingredients:</strong> ${ingredientsPreview}</p>
         <div class="recipe-rating">
@@ -287,36 +292,5 @@ document.getElementById('showMoreBtn').addEventListener('click', () => {
   }, 100);
 });
 
-// Load recipes saat halaman dimuat
-fetchRecipes();('keypress', (e) => {
-  if (e.key === 'Enter') {
-    performSearch();
-  }
-});
-
-function performSearch() {
-  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-  const selectedCuisine = document.getElementById('cuisineFilter').value;
-
-  filteredRecipes = allRecipes;
-
-  // Filter by cuisine first
-  if (selectedCuisine) {
-    filteredRecipes = filteredRecipes.filter(recipe => recipe.cuisine === selectedCuisine);
-  }
-
-  // Then filter by search term
-  if (searchTerm) {
-    filteredRecipes = filteredRecipes.filter(recipe => 
-      recipe.name.toLowerCase().includes(searchTerm) ||
-      recipe.cuisine.toLowerCase().includes(searchTerm) ||
-      recipe.ingredients.some(ing => ing.toLowerCase().includes(searchTerm))
-    );
-  }
-
-  displayRecipes(filteredRecipes);
-  updateRecipeCount();
-}
-
-// Load recipes saat halaman dimuat
+// load recipes saat halaman dimuat
 fetchRecipes();
