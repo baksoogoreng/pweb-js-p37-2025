@@ -1,3 +1,54 @@
+const texts = [
+  "No one is born a great cook, one learns by doing.",
+  "Personne ne naît grand cuisinier, on le devient en pratiquant.",
+  "Nessuno nasce grande cuoco, si impara facendolo.",
+  "誰もが生まれながらの名料理人ではない、実践して学ぶものだ。",
+  "Nadie nace siendo un gran cocinero, se aprende haciéndolo."
+];
+let textIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+let typingSpeed = 100;
+
+function typeText() {
+  const typingElement = document.querySelector('.typing-animation');
+  if (!typingElement) return;
+
+  const currentText = texts[textIndex];
+
+  if (isDeleting) {
+    typingElement.textContent = currentText.substring(0, charIndex - 1);
+    charIndex--;
+    typingSpeed = 50;
+  } else {
+    typingElement.textContent = currentText.substring(0, charIndex + 1);
+    charIndex++;
+    typingSpeed = 100;
+  }
+
+  if (!isDeleting && charIndex === currentText.length) {
+    isDeleting = true;
+    typingSpeed = 2000; // Pause before deleting
+  } else if (isDeleting && charIndex === 0) {
+    isDeleting = false;
+    textIndex = (textIndex + 1) % texts.length;
+    typingSpeed = 500; // Pause before typing next
+  }
+
+  setTimeout(typeText, typingSpeed);
+}
+
+// Start typing animation when page loads
+setTimeout(typeText, 500);
+
+function debounce(func, delay) {
+  let timeoutId;
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
 // Ambil nama pengguna dari localStorage
 const firstName = localStorage.getItem('firstName');
 
@@ -6,7 +57,8 @@ const welcomeText = document.getElementById('welcomeText');
 if (firstName) {
   welcomeText.textContent = `Welcome, ${firstName}!`;
 } else {
-  welcomeText.textContent = 'Welcome, Guest!';
+  alert('Please login first!');
+  window.location.href = 'index.html';
 }
 
 // Tombol logout
@@ -19,6 +71,8 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 // Variable untuk menyimpan data resep
 let allRecipes = [];
 let filteredRecipes = [];
+let displayedCount = 15; // Show 15 recipes initially
+let currentPage = 1;
 
 // Fetch recipes dari API
 async function fetchRecipes() {
@@ -88,16 +142,23 @@ function getDifficultyClass(difficulty) {
 // Display recipes
 function displayRecipes(recipes) {
   const recipeGrid = document.getElementById('recipeGrid');
+  const showMoreBtn = document.getElementById('showMoreBtn');
+  
+  // Calculate how many to show
+  const recipesToShow = recipes.slice(0, displayedCount);
+  
   recipeGrid.innerHTML = '';
 
   if (recipes.length === 0) {
-    recipeGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #979797; padding: 40px;">No recipes found.</p>';
+    recipeGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--dark-gray-text); padding: 40px;">No recipes found.</p>';
+    showMoreBtn.style.display = 'none';
     return;
   }
 
-  recipes.forEach(recipe => {
+  recipesToShow.forEach((recipe, index) => {
     const card = document.createElement('div');
     card.className = 'recipe-card';
+    card.style.setProperty('--card-index', index + 1);
 
     const ingredientsPreview = recipe.ingredients.slice(0, 3).join(', ') + 
                                (recipe.ingredients.length > 3 ? ` +${recipe.ingredients.length - 3} more` : '');
@@ -122,6 +183,13 @@ function displayRecipes(recipes) {
 
     recipeGrid.appendChild(card);
   });
+
+  // Show/hide Show More button
+  if (recipes.length > displayedCount) {
+    showMoreBtn.style.display = 'flex';
+  } else {
+    showMoreBtn.style.display = 'none';
+  }
 }
 
 // View full recipe (bisa dikembangkan ke halaman detail)
@@ -134,22 +202,36 @@ function viewRecipe(id) {
 
 // Update recipe count
 function updateRecipeCount() {
-  document.getElementById('recipeCount').textContent = filteredRecipes.length;
-  document.getElementById('totalCount').textContent = allRecipes.length;
+  const showing = Math.min(displayedCount, filteredRecipes.length);
+  document.getElementById('recipeCount').textContent = showing;
+  document.getElementById('totalCount').textContent = filteredRecipes.length;
 }
 
 // Filter berdasarkan cuisine
-document.getElementById('cuisineFilter').addEventListener('change', (e) => {
-  const selectedCuisine = e.target.value;
+document.getElementById('cuisineFilter').addEventListener('change', applyFilters);
+document.getElementById('difficultyFilter').addEventListener('change', applyFilters);
+document.getElementById('sortFilter').addEventListener('change', applyFilters);
+
+function applyFilters() {
+  const selectedCuisine = document.getElementById('cuisineFilter').value;
+  const selectedDifficulty = document.getElementById('difficultyFilter').value;
+  const selectedSort = document.getElementById('sortFilter').value;
   const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
-  if (selectedCuisine === '') {
-    filteredRecipes = allRecipes;
-  } else {
-    filteredRecipes = allRecipes.filter(recipe => recipe.cuisine === selectedCuisine);
+  // Reset to all recipes
+  filteredRecipes = [...allRecipes];
+
+  // Filter by cuisine
+  if (selectedCuisine) {
+    filteredRecipes = filteredRecipes.filter(recipe => recipe.cuisine === selectedCuisine);
   }
 
-  // Apply search filter juga
+  // Filter by difficulty
+  if (selectedDifficulty) {
+    filteredRecipes = filteredRecipes.filter(recipe => recipe.difficulty === selectedDifficulty);
+  }
+
+  // Filter by search term
   if (searchTerm) {
     filteredRecipes = filteredRecipes.filter(recipe => 
       recipe.name.toLowerCase().includes(searchTerm) ||
@@ -158,13 +240,55 @@ document.getElementById('cuisineFilter').addEventListener('change', (e) => {
     );
   }
 
+  // Sort recipes
+  if (selectedSort) {
+    switch(selectedSort) {
+      case 'rating-high':
+        filteredRecipes.sort((a, b) => b.rating - a.rating);
+        break;
+      case 'rating-low':
+        filteredRecipes.sort((a, b) => a.rating - b.rating);
+        break;
+      case 'time-short':
+        filteredRecipes.sort((a, b) => 
+          (a.prepTimeMinutes + a.cookTimeMinutes) - (b.prepTimeMinutes + b.cookTimeMinutes)
+        );
+        break;
+      case 'time-long':
+        filteredRecipes.sort((a, b) => 
+          (b.prepTimeMinutes + b.cookTimeMinutes) - (a.prepTimeMinutes + a.cookTimeMinutes)
+        );
+        break;
+    }
+  }
+
+  // Reset pagination
+  displayedCount = 15;
   displayRecipes(filteredRecipes);
   updateRecipeCount();
-});
+}
 
 // Search functionality
-document.getElementById('searchBtn').addEventListener('click', performSearch);
-document.getElementById('searchInput').addEventListener('keypress', (e) => {
+const debouncedSearch = debounce(applyFilters, 300);
+document.getElementById('searchInput').addEventListener('input', debouncedSearch);
+
+// Show More Button
+document.getElementById('showMoreBtn').addEventListener('click', () => {
+  displayedCount += 15;
+  displayRecipes(filteredRecipes);
+  updateRecipeCount();
+  
+  // Scroll to first new card
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.recipe-card');
+    if (cards.length > displayedCount - 15) {
+      cards[displayedCount - 15].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 100);
+});
+
+// Load recipes saat halaman dimuat
+fetchRecipes();('keypress', (e) => {
   if (e.key === 'Enter') {
     performSearch();
   }
