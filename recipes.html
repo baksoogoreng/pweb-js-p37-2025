@@ -3,20 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recipes Page</title>
+  <title>Recipe Collection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/recipes.css">
 </head>
 <body>
   <nav class="navbar">
-    <div class="nav-logo">Recipes Collection</div>
+    <div class="nav-logo">Recipe Collection</div>
     <div class="nav-user">
-      <span id="welcomeText">Welcome, Guest</span>
-      <button id="logoutBtn">Logout</button>
+      <span id="welcomeText">Welcome, Guest!</span>
+      <button id="logoutBtn">LOGOUT</button>
     </div>
   </nav>
 
   <main class="content">
-    <!-- Kosong dulu -->
+    <div class="hero-section">
+      <h1>Your Recipe Collection</h1>
+        <input type="text" id="searchInput" placeholder="Search recipes...">
+        <button id="searchBtn">🔍</button>
+      </div>
+      
+      <select id="cuisineFilter" class="cuisine-dropdown">
+        <option value="">All Cuisines</option>
+      </select>
+
+      <div class="recipe-count">
+        Showing <span id="recipeCount">0</span> of <span id="totalCount">0</span> recipes
+      </div>
+    </div>
+
+    <div id="recipeGrid" class="recipe-grid">
+      <!-- Recipe cards akan dimuat di sini -->
+    </div>
+
+    <div id="loadingState" class="loading">Loading recipes...</div>
+    <div id="errorState" class="error" style="display: none;">Failed to load recipes. Please try again.</div>
   </main>
 
   <script src="js/recipes.js"></script>
