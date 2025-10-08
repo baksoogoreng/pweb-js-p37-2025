@@ -93,6 +93,69 @@ const modalCloseBtn = document.getElementById('modalClose');
 const modalOverlay = document.getElementById('modalOverlay');
 // ! Ini tambahan akhir
 
+// ! Ini tambahan (Theme toggle: apply saved theme, toggle, persist) ----------------------------------
+
+// Elements
+const themeToggleBtn = document.getElementById('themeToggle');
+
+// Apply theme on load: check localStorage, then prefers-color-scheme as fallback
+(function applyInitialTheme() {
+  try {
+    const saved = localStorage.getItem('theme'); // 'dark' or 'light'
+    if (saved === 'dark') {
+      document.body.classList.add('dark');
+    } else if (saved === 'light') {
+      document.body.classList.remove('dark');
+    } else {
+      // fallback to system preference
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) document.body.classList.add('dark');
+    }
+    // update toggle icon initially
+    updateThemeToggleUI();
+  } catch (e) {
+    console.error('Theme init error', e);
+  }
+})();
+
+function updateThemeToggleUI() {
+  if (!themeToggleBtn) return;
+  const isDark = document.body.classList.contains('dark');
+  themeToggleBtn.textContent = isDark ? '☀️' : '🌙'; // sun when dark (so click will go light), moon otherwise
+  themeToggleBtn.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+}
+
+// toggle handler
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark');
+    try {
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    } catch (e) {
+      console.warn('Could not save theme to localStorage', e);
+    }
+    updateThemeToggleUI();
+  });
+}
+
+// listen to system changes (optional, keeps UI in sync if user changes OS theme)
+if (window.matchMedia) {
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', e => {
+    const saved = localStorage.getItem('theme');
+    // only auto-update if user hasn't explicitly chosen
+    if (!saved) {
+      if (e.matches) {
+        document.body.classList.add('dark');
+      } else {
+        document.body.classList.remove('dark');
+      }
+      updateThemeToggleUI();
+    }
+  });
+}
+
+// ! Ini tambahan akhir -------------------------------------------------------------------------------
+
 // Fetch recipes dari API
 async function fetchRecipes() {
   const loadingState = document.getElementById('loadingState');

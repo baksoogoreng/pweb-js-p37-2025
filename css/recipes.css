@@ -894,12 +894,13 @@ body {
 .need-prepare h4 {
   margin: 0 0 8px 0;
   font-size: 14px;
+  color: #000000;
 }
 
 .modal-missing {
   list-style: none;
   padding-left: 6px;
-  color: var(--dark-gray-text);
+  color:rgba(35, 35, 36, 0.78);
 }
 
 .modal-missing li {
@@ -912,6 +913,7 @@ body {
   margin-top: 10px;
   font-weight: 700;
   font-size: 15px;
+  color:rgba(35, 35, 36, 0.78)
 }
 
 .modal-allset .blue {
@@ -930,4 +932,74 @@ body {
     order: 1;
   }
 }
+/* ! Ini akhirnya */
+/* ! Ini tambahan (Dark mode variables & transitions) */
+
+/* Smooth color transitions */
+:root, body {
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+/* Dark mode applied by adding .dark to <body> */
+body.dark {
+  --black: #FFFFFF;               /* primary text becomes light */
+  --white: #0b0f16;               /* card backgrounds become dark (use sparingly) */
+  --light-gray: #1b1f24;
+  --medium-gray: #15171a;
+  --dark-gray-text: #c7ced6;      /* secondary text light */
+  --primary-blue: #1e90ff;        /* keep accent visible */
+  --hover-black: #e6e6e6;
+  --hover-gray: #9aa6b2;
+  --orange-rating: #FFA500;
+  --red-error: #ff7675;
+  --green: #2ecc71;
+  background-color: var(--medium-gray);
+  color: var(--black);
+}
+
+body.dark .navbar {
+  background-color: rgba(11, 15, 22, 0.78); /* slightly translucent dark navbar */
+  color: var(--black);
+  border-bottom-color: rgba(255,255,255,0.04);
+}
+
+body.dark .recipe-card {
+  background-color: #0f1316; /* dark card bg */
+  border-color: rgba(255,255,255,0.04);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+
+body.dark .recipe-image { filter: brightness(0.95) contrast(0.95); }
+
+body.dark .cuisine-dropdown,
+body.dark .search-wrapper input,
+body.dark .show-more-btn,
+body.dark .nav-user button {
+  background-color: #0b0f13;
+  color: var(--dark-gray-text);
+  border-color: rgba(255,255,255,0.04);
+}
+
+/* Keep modal readable in dark mode */
+body.dark .recipe-modal .modal-wrapper {
+  background: #0b0f13;
+  color: var(--dark-gray-text);
+}
+
+/* Toggle button styling to match navbar */
+#themeToggle {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.15s ease, transform 0.08s ease;
+  margin-right: 6px;
+}
+#themeToggle:hover { transform: translateY(-1px); }
+
+/* Make icon color invert in dark mode so it remains visible */
+body.dark #themeToggle { color: var(--black); border-color: rgba(255,255,255,0.06); }
+
 /* ! Ini akhirnya */
