@@ -1,3 +1,4 @@
+// teks typing (tetap dari versi awal)
 const texts = [
   "No one is born a great cook, one learns by doing.",
   "Personne ne naît grand cuisinier, on le devient en pratiquant.",
@@ -38,7 +39,6 @@ function typeText() {
   setTimeout(typeText, typingSpeed);
 }
 
-// Start typing animation when page loads
 setTimeout(typeText, 500);
 
 function debounce(func, delay) {
@@ -72,6 +72,26 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 let allRecipes = [];
 let filteredRecipes = [];
 let displayedCount = 15; // Show 15 recipes initially
+
+// Elements for modal ( ! tambahan )
+const modalRoot = document.getElementById('recipeModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalImage = document.getElementById('modalImage');
+const modalPrep = document.getElementById('modalPrep');
+const modalCook = document.getElementById('modalCook');
+const modalServings = document.getElementById('modalServings');
+const modalDifficulty = document.getElementById('modalDifficulty');
+const modalCuisine = document.getElementById('modalCuisine');
+const modalCalories = document.getElementById('modalCalories');
+const modalRating = document.getElementById('modalRating');
+const modalTags = document.getElementById('modalTags');
+const modalIngredientList = document.getElementById('modalIngredientList');
+const modalInstructionList = document.getElementById('modalInstructionList');
+const modalMissingList = document.getElementById('modalMissingList');
+const modalAllSetMsg = document.getElementById('modalAllSetMsg');
+const modalCloseBtn = document.getElementById('modalClose');
+const modalOverlay = document.getElementById('modalOverlay');
+// ! Ini tambahan akhir
 
 // Fetch recipes dari API
 async function fetchRecipes() {
@@ -197,11 +217,84 @@ function displayRecipes(recipes) {
   }
 }
 
-// View full recipe (bisa dikembangkan ke halaman detail)
+// ! Ini tambahan (ubah viewRecipe agar buka modal, bukan alert)
 function viewRecipe(id) {
+  // cari objek resep dari allRecipes (sudah dit-fetch)
   const recipe = allRecipes.find(r => r.id === id);
-  if (recipe) {
-    alert(`Recipe Details:\n\nName: ${recipe.name}\nCuisine: ${recipe.cuisine}\nDifficulty: ${recipe.difficulty}\nRating: ${recipe.rating}\n\nIngredients:\n${recipe.ingredients.join('\n')}\n\nInstructions:\n${recipe.instructions.join('\n')}`);
+  if (!recipe) {
+    alert('Recipe not found.');
+    return;
+  }
+
+  // isi modal
+  modalTitle.textContent = recipe.name;
+  modalImage.src = recipe.image || '';
+  modalImage.alt = recipe.name;
+  modalPrep.textContent = `${recipe.prepTimeMinutes} Mins`;
+  modalCook.textContent = `${recipe.cookTimeMinutes} Mins`;
+  modalServings.textContent = recipe.servings ?? '-';
+  modalDifficulty.textContent = recipe.difficulty ?? '-';
+  modalCuisine.textContent = recipe.cuisine ?? '-';
+  modalCalories.textContent = (recipe.caloriesPerServing ? recipe.caloriesPerServing + ' Cal/serving' : '-');
+  modalRating.textContent = `${generateStars(recipe.rating)} (${recipe.rating})`;
+
+  modalTags.innerHTML = (recipe.tags || []).map(t => `<span class="tag">${t}</span>`).join(' ');
+
+  // ingredients (buat checkbox tiap item)
+  modalIngredientList.innerHTML = '';
+  modalMissingList.innerHTML = '';
+  modalAllSetMsg.classList.add('hidden');
+
+  (recipe.ingredients || []).forEach((ing, i) => {
+    const li = document.createElement('li');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = `ing-${id}-${i}`;
+    checkbox.dataset.ingredient = ing;
+    checkbox.addEventListener('change', () => updateMissingList());
+    const label = document.createElement('label');
+    label.setAttribute('for', checkbox.id);
+    label.textContent = ing;
+
+    li.appendChild(checkbox);
+    li.appendChild(label);
+
+    modalIngredientList.appendChild(li);
+  });
+
+  // instructions
+  modalInstructionList.innerHTML = (recipe.instructions || []).map(step => `<li>${step}</li>`).join('');
+
+  // show missing (initially all ingredients are missing)
+  updateMissingList();
+
+  // show modal
+  modalRoot.classList.remove('hidden');
+  modalRoot.setAttribute('aria-hidden', 'false');
+
+  // focus management (simple)
+  modalCloseBtn.focus();
+}
+// ! Ini tambahan akhir
+
+// Update missing ingredient list based on checked boxes
+function updateMissingList() {
+  const checkboxes = modalIngredientList.querySelectorAll('input[type="checkbox"]');
+  const missing = [];
+  let allChecked = true;
+  checkboxes.forEach(cb => {
+    if (!cb.checked) {
+      missing.push(cb.dataset.ingredient);
+      allChecked = false;
+    }
+  });
+
+  if (allChecked && checkboxes.length > 0) {
+    modalMissingList.innerHTML = '';
+    modalAllSetMsg.classList.remove('hidden');
+  } else {
+    modalAllSetMsg.classList.add('hidden');
+    modalMissingList.innerHTML = missing.map(m => `<li>${m}</li>`).join('') || '<li>All ingredients are checked</li>';
   }
 }
 
@@ -291,6 +384,25 @@ document.getElementById('showMoreBtn').addEventListener('click', () => {
     }
   }, 100);
 });
+
+// close modal handlers ( ! tambahan )
+modalCloseBtn.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', closeModal);
+
+// close by ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !modalRoot.classList.contains('hidden')) {
+    closeModal();
+  }
+});
+
+function closeModal() {
+  modalRoot.classList.add('hidden');
+  modalRoot.setAttribute('aria-hidden', 'true');
+  // clear modal content to avoid stale images
+  modalImage.src = '';
+}
+// ! Ini tambahan akhir
 
 // load recipes saat halaman dimuat
 fetchRecipes();

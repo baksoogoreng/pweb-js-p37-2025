@@ -98,6 +98,55 @@
     <div id="errorState" class="error" style="display: none;">Failed to load recipes. Please try again.</div>
   </main>
 
+  <!-- ! Ini tambahan (Modal detail recipe dimasukkan langsung dalam recipes.html) -->
+  <div id="recipeModal" class="recipe-modal hidden" aria-hidden="true" role="dialog" aria-label="Recipe detail">
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal-wrapper">
+      <div class="modal-header">
+        <h2 id="modalTitle">Recipe Name</h2>
+        <button id="modalClose" class="modal-close" aria-label="Close detail">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-left">
+          <img id="modalImage" src="" alt="Recipe photo" class="modal-img">
+          <div class="rating-tags">
+            <div id="modalRating" class="modal-rating"></div>
+            <div id="modalTags" class="modal-tags"></div>
+          </div>
+
+          <div class="ingredients-section">
+            <h3>Ingredients</h3>
+            <ul id="modalIngredientList" class="modal-ingredients"></ul>
+          </div>
+
+          <div class="instructions-section">
+            <h3>Instruction</h3>
+            <ol id="modalInstructionList" class="modal-instructions"></ol>
+          </div>
+        </div>
+
+        <aside class="modal-right">
+          <div class="info-grid">
+            <div class="info-box">PREP TIME<br><b id="modalPrep">-</b></div>
+            <div class="info-box">COOK TIME<br><b id="modalCook">-</b></div>
+            <div class="info-box">SERVINGS<br><b id="modalServings">-</b></div>
+            <div class="info-box">DIFFICULTY<br><b id="modalDifficulty">-</b></div>
+            <div class="info-box">CUISINE<br><b id="modalCuisine">-</b></div>
+            <div class="info-box">CALORIES<br><b id="modalCalories">-</b></div>
+          </div>
+
+          <div class="need-prepare">
+            <h4>Ingredients you need to <span class="blue">prepare</span></h4>
+            <ul id="modalMissingList" class="modal-missing"></ul>
+            <p id="modalAllSetMsg" class="modal-allset hidden">You're <span class="blue">All Set!</span></p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+  <!-- ! Ini akhirnya -->
+
   <script src="js/recipes.js"></script>
 </body>
 </html>

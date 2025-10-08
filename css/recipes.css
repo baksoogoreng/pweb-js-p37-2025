@@ -721,3 +721,213 @@ body {
     padding: 18px;
   }
 }
+
+/* ! Ini tambahan (CSS modal & checklist styling) */
+.recipe-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  transition: opacity 0.2s ease;
+}
+
+.recipe-modal.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.recipe-modal .modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(2px);
+}
+
+.recipe-modal .modal-wrapper {
+  position: relative;
+  width: min(1100px, 95%);
+  max-height: 90vh;
+  overflow: hidden;
+  z-index: 2;
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--medium-gray);
+}
+
+.modal-header h2 {
+  font-size: 1.25rem;
+  color: var(--white);
+  margin: 0;
+  background: linear-gradient(90deg, #0b84d9 100%, #007AFF 100%);
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--white);
+  font-weight: 700;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--dark-gray-text);
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 18px;
+  padding: 18px 22px;
+  overflow: auto;
+}
+
+.modal-left {
+  padding-right: 6px;
+}
+
+.modal-img {
+  width: 100%;
+  max-height: 310px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 0 auto 20px auto;
+}
+
+.rating-tags {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.modal-rating {
+  color: var(--orange-rating);
+  font-weight: 700;
+}
+
+.modal-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.modal-tags .tag {
+  background: #f0f0f0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--dark-gray-text);
+}
+
+.ingredients-section h3,
+.instructions-section h3 {
+  margin-bottom: 8px;
+  color: var(--black);
+}
+
+.modal-ingredients {
+  list-style: none;
+  padding: 0;
+}
+
+.modal-ingredients li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 6px;
+  border-bottom: 1px dashed #eee;
+}
+
+.modal-ingredients li label {
+  cursor: pointer;
+  color: var(--dark-gray-text);
+}
+
+.modal-ingredients input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--primary-blue);
+}
+
+.modal-instructions {
+  padding-left: 18px;
+  color: var(--dark-gray-text);
+  line-height: 1.6;
+}
+
+.modal-right .info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.info-box {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+  color: #333;
+}
+
+.need-prepare {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.need-prepare h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.modal-missing {
+  list-style: none;
+  padding-left: 6px;
+  color: var(--dark-gray-text);
+}
+
+.modal-missing li {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.modal-allset {
+  margin-top: 10px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.modal-allset .blue {
+  color: var(--primary-blue);
+}
+
+/* small screens: modal stacks */
+@media (max-width: 900px) {
+  .modal-body {
+    grid-template-columns: 1fr;
+  }
+  .modal-right {
+    order: 2;
+  }
+  .modal-left {
+    order: 1;
+  }
+}
+/* ! Ini akhirnya */
